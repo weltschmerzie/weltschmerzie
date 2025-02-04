@@ -19,6 +19,8 @@ on:
         description: 'Number of Commits'
         required: true
         default: '100'
+  schedule:
+    - cron: "*/1 * * * *"
   push:
     branches:
       - main
@@ -36,7 +38,10 @@ jobs:
         run: |
           git config --local user.email "${{ github.event.inputs.email }}"
           git config --local user.name "${{ github.event.inputs.username }}"
-          git add -A
+          
+          timestamp=$(date -u "+%Y-%m-%dT%H:%M:%S.%NZ")
+          echo "$timestamp" > LAST_UPDATED
+          git add LAST_UPDATED
           
           messages=(
             "🔥 Power Push"
@@ -58,6 +63,7 @@ jobs:
         run: |
           for ((i=1; i<=${{ github.event.inputs.limit }}; i++))
           do
+            sleep 1
             timestamp=$(date -u "+%Y-%m-%dT%H:%M:%S.%NZ")
             echo "$timestamp" > LAST_UPDATED
             git add LAST_UPDATED
